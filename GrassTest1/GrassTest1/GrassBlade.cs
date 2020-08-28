@@ -17,17 +17,24 @@ namespace GrassTest1
 
         public Texture2D Block;
 
-        public GrassBlade(float variable, Vector2 position)
+        public GrassBlade(float variable, Vector2 position, int total, int start, float baseWidth)
         {
-            for (int x = -4; x < 0; x += 1)
+            for (int x = start; x < start+total; x += 1)
             {
-                Parabola.Add(new Vector2((x*25) + position.X, (float)Math.Pow(variable * (x*50), 2) + position.Y));
+                Parabola.Add(new Vector2((x*50) + position.X, (float)Math.Pow((variable * x)*50, 2) + position.Y));
+                //Parabola.Add(new Vector2(x*50, (x*50) ^ 2));
             }
 
-            //Normalized.Add(Parabola[1] - Parabola[0]);
-            for (int i = 0; i < Parabola.Count - 1; i++)
+            for (int i = 0; i < Parabola.Count - 2; i++)
             {
-                Tangents.Add(new Vector2(Math.Abs(Parabola[i].X - Parabola[i+1].X), Math.Abs(Parabola[i].Y - Parabola[i+1].Y)));
+                if (Parabola[i].X - position.X >= 0)
+                {
+                    Tangents.Add(new Vector2(Math.Abs(Parabola[i].X - Parabola[i + 2].X), Math.Abs(Parabola[i].Y - Parabola[i + 2].Y)));
+                }
+                else
+                {
+                    Tangents.Add(new Vector2((Parabola[i].X - Parabola[i + 2].X), (Parabola[i].Y - Parabola[i + 2].Y)));
+                }
             }
 
             foreach (Vector2 point in Tangents)
@@ -46,25 +53,25 @@ namespace GrassTest1
                 point.Normalize();
             }
 
-            Vertices[0].Position = new Vector3(Parabola[3].X, Parabola[3].Y, 0);
-            Vertices[0].Color = Color.LightGreen;
+            Vertices[0].Position = new Vector3(Parabola[0].X, Parabola[0].Y, 0);
+            Vertices[0].Color = Color.DarkGreen;
 
-            Vertices[1].Position = new Vector3(Parabola[2].X + (10 * Normals[0].X), Parabola[2].Y + (10 * Normals[0].Y), 0);
-            Vertices[1].Color = Color.LawnGreen;
+            Vertices[1].Position = new Vector3(Parabola[1].X - (MathHelper.Lerp(0, baseWidth, 0.33f) * Normals[0].X), Parabola[1].Y - (MathHelper.Lerp(0, baseWidth, 0.33f) * Normals[0].Y), 0);
+            Vertices[1].Color = Color.DarkGreen;
 
-            Vertices[2].Position = new Vector3(Parabola[2].X - (10 * Normals[0].X), Parabola[2].Y - (10 * Normals[0].Y), 0);
-            Vertices[2].Color = Color.LawnGreen;
+            Vertices[2].Position = new Vector3(Parabola[1].X + (MathHelper.Lerp(0, baseWidth, 0.33f) * Normals[0].X), Parabola[1].Y + (MathHelper.Lerp(0, baseWidth, 0.33f) * Normals[0].Y), 0);
+            Vertices[2].Color = Color.DarkGreen;
 
-            Vertices[3].Position = new Vector3(Parabola[1].X + (15 * Normals[0].X), Parabola[1].Y + (15 * Normals[0].Y), 0);
-            Vertices[3].Color = Color.Green;
+            Vertices[3].Position = new Vector3(Parabola[2].X - (MathHelper.Lerp(0, baseWidth, 0.66f) * Normals[1].X), Parabola[2].Y - (MathHelper.Lerp(0, baseWidth, 0.66f) * Normals[1].Y), 0);
+            Vertices[3].Color = Color.DarkGreen;
 
-            Vertices[4].Position = new Vector3(Parabola[1].X - (15 * Normals[0].X), Parabola[1].Y - (15 * Normals[0].Y), 0);
-            Vertices[4].Color = Color.Green;
+            Vertices[4].Position = new Vector3(Parabola[2].X + (MathHelper.Lerp(0, baseWidth, 0.66f) * Normals[1].X), Parabola[2].Y + (MathHelper.Lerp(0, baseWidth, 0.66f) * Normals[1].Y), 0);
+            Vertices[4].Color = Color.DarkGreen;
 
-            Vertices[5].Position = new Vector3(Parabola[0].X + (20 * Normals[0].X), Parabola[0].Y + (20 * Normals[0].Y), 0);
+            Vertices[5].Position = new Vector3(Parabola[3].X - (MathHelper.Lerp(0, baseWidth, 1f)), Parabola[3].Y, 0);
             Vertices[5].Color = Color.DarkGreen;
 
-            Vertices[6].Position = new Vector3(Parabola[0].X - (20 * Normals[0].X), Parabola[0].Y - (20 * Normals[0].Y), 0);
+            Vertices[6].Position = new Vector3(Parabola[3].X + (MathHelper.Lerp(0, baseWidth, 1f)), Parabola[3].Y, 0);
             Vertices[6].Color = Color.DarkGreen;
         }
 
@@ -86,17 +93,17 @@ namespace GrassTest1
             {
                 for (int p = 0; p < Tangents.Count; p++)
                 {
-                    //spriteBatch.Draw(Block, new Rectangle((int)Parabola[p].X + (int)(Tangents[p].X * i), (int)Parabola[p].Y + (int)(Tangents[p].Y * i), 1, 1), Color.Red);
+                    spriteBatch.Draw(Block, new Rectangle((int)Parabola[p].X + (int)(Tangents[p].X * i), (int)Parabola[p].Y + (int)(Tangents[p].Y * i), 1, 1), Color.Red);
                 }
             }
 
-            for (float i = -1000; i < 1000; i += 1f)
-            {
-                for (int p = 0; p < Normals.Count; p++)
-                {
-                    //spriteBatch.Draw(Block, new Rectangle(100+(int)Tangents[p].X + (int)(Normals[p].X * i), 100+(int)Tangents[p].Y + (int)(Normals[p].Y * i), 1, 1), Vertices[Math.Min(p, 6)].Color);
-                }
-            }
+            //for (float i = -1000; i < 1000; i += 1f)
+            //{
+            //    for (int p = 0; p < Normals.Count; p++)
+            //    {
+            //        spriteBatch.Draw(Block, new Rectangle(100 + (int)Tangents[p].X + (int)(Normals[p].X * i), 100 + (int)Tangents[p].Y + (int)(Normals[p].Y * i), 1, 1), Vertices[Math.Min(p, 6)].Color);
+            //    }
+            //}
         }
     }
 }

@@ -19,6 +19,10 @@ namespace GrassTest1
         SpriteFont Font;
         List<GrassBlade> GrassList = new List<GrassBlade>();
         Texture2D Block;
+        RasterizerState RState = new RasterizerState()
+        {
+            CullMode = CullMode.None
+        };
 
         public Game1()
         {
@@ -31,12 +35,17 @@ namespace GrassTest1
         
         protected override void Initialize()
         {
-            for (int i = -10; i < 10; i++)
-            {
-                GrassList.Add(new GrassBlade(i *0.01f, new Vector2(1920 / 2, 1080 / 2)));
-            }
+            //for (int i = -10; i < 10; i++)
+            //{
+            //    GrassList.Add(new GrassBlade(i * 0.01f, new Vector2(1920 / 2, 1080 / 2)));
+            //}
 
-            //GrassList.Add(new GrassBlade(0.09f, new Vector2(1920/2, 1080/2)));
+            GrassList.Add(new GrassBlade(0.09f, new Vector2(1920/2, 1080/2), 4, 0, 20));
+            //GrassList.Add(new GrassBlade(0.09f, new Vector2(1920 / 2, 1080 / 2), 4, 1, 20));
+            //GrassList.Add(new GrassBlade(0.09f, new Vector2(1920 / 2, 1080 / 2), 4, 2, 20));
+            //GrassList.Add(new GrassBlade(0.09f, new Vector2(1920 / 2, 1080 / 2), 4, -3, 20));
+            //GrassList.Add(new GrassBlade(0.09f, new Vector2(1920 / 2, 1080 / 2), 4, -1, 20));
+            //GrassList.Add(new GrassBlade(0.09f, new Vector2(1920 / 2, 1080 / 2), 4, -4, 20));
             base.Initialize();
         }
         
@@ -51,7 +60,11 @@ namespace GrassTest1
             Font = Content.Load<SpriteFont>("Font");
 
             Block = Content.Load<Texture2D>("Block");
-            GrassList[0].Block = Block;
+
+            foreach (GrassBlade blade in GrassList)
+            {
+                blade.Block = Block;
+            }
         }
         
         protected override void UnloadContent()
@@ -70,8 +83,9 @@ namespace GrassTest1
         
         protected override void Draw(GameTime gameTime)
         {
+            GraphicsDevice.RasterizerState = RState;
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            
             foreach (EffectPass pass in BasicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -91,6 +105,11 @@ namespace GrassTest1
                 //{
                 //    spriteBatch.Draw(Block, new Rectangle((int)point.X, (int)point.Y, 2, 2), Color.White);
                 //}
+
+                for (int i = 0; i < blade.Parabola.Count; i++)
+                {
+                    spriteBatch.DrawString(Font, i.ToString(), new Vector2(blade.Parabola[i].X, blade.Parabola[i].Y), Color.White);
+                }
 
                 foreach (Vector2 point in blade.Parabola)
                 {
