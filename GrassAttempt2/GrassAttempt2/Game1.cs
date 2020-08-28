@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 namespace GrassAttempt2
-{
+{    
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
@@ -28,48 +28,42 @@ namespace GrassAttempt2
             graphics.PreferredBackBufferWidth = 1280;
             Content.RootDirectory = "Content";
         }
-
+        
         protected override void Initialize()
         {
-            ThreePoints.Add(new Vector2(500, 200));
-            ThreePoints.Add(new Vector2(350, 350));
             ThreePoints.Add(new Vector2(500, 450));
+            ThreePoints.Add(new Vector2(350, 350));
+            ThreePoints.Add(new Vector2(500, 100));
 
-            for (int i = 0; i < 2; i++)
+            for (float t = 0.333f; t < 0.9; t += 0.333f)
             {
-                float Dist = Vector2.Distance(ThreePoints[i], ThreePoints[i + 1]);
-                Vector2 Direction = ThreePoints[i] - ThreePoints[i + 1];
-                Direction.Normalize();
-
-                ThreePoints.Add(ThreePoints[i] - (Direction * (Dist / 3)));
-                ThreePoints.Add(ThreePoints[i + 1] + (Direction * (Dist / 3)));
+                Vector2 newPoint1 = new Vector2(
+                    (float)Math.Pow(1 - t, 2) * ThreePoints[0].X + (2 * t * (1 - t)) * (ThreePoints[1].X) + (float)Math.Pow(t, 2) * ThreePoints[2].X,
+                    (float)Math.Pow(1 - t, 2) * ThreePoints[0].Y + (2 * t * (1 - t)) * (ThreePoints[1].Y) + (float)Math.Pow(t, 2) * ThreePoints[2].Y);
+                ThreePoints.Add(newPoint1);
             }
 
-            for (int i = -50; i < 50; i++)
-            {
-
-            }
             base.Initialize();
         }
-
+        
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Block = Content.Load<Texture2D>("Block");
             Font = Content.Load<SpriteFont>("Font");
         }
-
+        
         protected override void UnloadContent()
         {
 
         }
-
+        
         protected override void Update(GameTime gameTime)
         {
-
+            //ThreePoints[0] = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
             base.Update(gameTime);
         }
-
+        
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
@@ -79,14 +73,8 @@ namespace GrassAttempt2
                 spriteBatch.Draw(Block, new Rectangle((int)ThreePoints[i].X, (int)ThreePoints[i].Y, 5, 5), Color.White);
                 spriteBatch.DrawString(Font, i.ToString(), new Vector2(ThreePoints[i].X + 5, ThreePoints[i].Y), Color.Yellow);
             }
-
-            foreach (Vector2 halfPoint in HalfPoints)
-            {
-                spriteBatch.Draw(Block, new Rectangle((int)halfPoint.X, (int)halfPoint.Y, 5, 5), Color.Red);
-            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
-
     }
 }
