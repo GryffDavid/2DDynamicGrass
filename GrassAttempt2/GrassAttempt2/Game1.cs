@@ -10,14 +10,16 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 namespace GrassAttempt2
-{    
+{
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D Block;
-        List<Vector2> ParabolaPointList = new List<Vector2>();
-        List<Vector2> ParabolaPointList2 = new List<Vector2>();
+        List<Vector2> ThreePoints = new List<Vector2>();
+        List<Vector2> HalfPoints = new List<Vector2>();
+        List<Vector2> LineList = new List<Vector2>();
+        SpriteFont Font;
 
         public Game1()
         {
@@ -26,71 +28,65 @@ namespace GrassAttempt2
             graphics.PreferredBackBufferWidth = 1280;
             Content.RootDirectory = "Content";
         }
-        
+
         protected override void Initialize()
         {
-            for (float x = -25; x < 0; x+=0.1f)
-            {
-                //ParabolaPointList.Add(
-                //    new Vector2(
-                //    x + (1280/2), //The X Value, offset by 1280/2
-                //    (float)Math.Pow(x, 2) + (720/2) //The Y value - X ^ 2 offset by 720/2
-                //    ));
+            ThreePoints.Add(new Vector2(500, 200));
+            ThreePoints.Add(new Vector2(350, 350));
+            ThreePoints.Add(new Vector2(500, 450));
 
-                //Parabola 1
-                ParabolaPointList.Add(
-                    new Vector2(
-                    x, //The X Value
-                    0.05f*(float)Math.Pow(x, 2) + (x*2) //The Y value
-                    ));
+            for (int i = 0; i < 2; i++)
+            {
+                float Dist = Vector2.Distance(ThreePoints[i], ThreePoints[i + 1]);
+                Vector2 Direction = ThreePoints[i] - ThreePoints[i + 1];
+                Direction.Normalize();
+
+                ThreePoints.Add(ThreePoints[i] - (Direction * (Dist / 3)));
+                ThreePoints.Add(ThreePoints[i + 1] + (Direction * (Dist / 3)));
             }
 
-            for (float x = 0; x < 25; x += 0.1f)
+            for (int i = -50; i < 50; i++)
             {
-                //Parabola 2
-                ParabolaPointList2.Add(
-                    new Vector2(
-                    x, //The X Value
-                    0.1f * (float)Math.Pow(x, 2) - (x * 2) //The Y value
-                    ));
+
             }
             base.Initialize();
         }
-        
+
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             Block = Content.Load<Texture2D>("Block");
+            Font = Content.Load<SpriteFont>("Font");
         }
-        
+
         protected override void UnloadContent()
         {
 
         }
-        
+
         protected override void Update(GameTime gameTime)
         {
 
             base.Update(gameTime);
         }
-        
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-            foreach (Vector2 point in ParabolaPointList)
+            spriteBatch.Begin();
+            for (int i = 0; i < ThreePoints.Count; i++)
             {
-                spriteBatch.Begin();
-                spriteBatch.Draw(Block, new Rectangle((int)point.X + (1280 / 2), (int)point.Y + (720 / 2), 1, 1), Color.White);
-                spriteBatch.End();
+                spriteBatch.Draw(Block, new Rectangle((int)ThreePoints[i].X, (int)ThreePoints[i].Y, 5, 5), Color.White);
+                spriteBatch.DrawString(Font, i.ToString(), new Vector2(ThreePoints[i].X + 5, ThreePoints[i].Y), Color.Yellow);
             }
 
-            foreach (Vector2 point in ParabolaPointList2)
+            foreach (Vector2 halfPoint in HalfPoints)
             {
-                spriteBatch.Begin();
-                spriteBatch.Draw(Block, new Rectangle((int)point.X + (1280/2), (int)point.Y + (720/2), 1, 1), Color.Red);
-                spriteBatch.End();
-            }    
+                spriteBatch.Draw(Block, new Rectangle((int)halfPoint.X, (int)halfPoint.Y, 5, 5), Color.Red);
+            }
+            spriteBatch.End();
             base.Draw(gameTime);
         }
+
     }
 }
