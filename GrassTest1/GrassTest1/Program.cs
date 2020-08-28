@@ -1,6 +1,6 @@
 using System;
 
-namespace GrassAttempt2
+namespace GrassTest1
 {
 #if WINDOWS || XBOX
     static class Program
